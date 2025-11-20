@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /pembimbing/{doc} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && get(/databases/$(database)/documents/pembimbing/$(request.auth.uid)).data.role == 'admin';
+      allow update, delete: if false;
+    }
+
+    match /bimbingan/{doc} {
+      // anyone boleh membuat (siswa tidak harus login), tetapi client sudah melakukan validasi kode
+      allow create: if true;
+      allow read: if request.auth != null;
+    }
+  }
+}
